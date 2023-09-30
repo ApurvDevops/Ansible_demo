@@ -5,4 +5,5 @@
 #[server:vars]
 #ansible_ssh_private_key_file=/root/.ssh/authorized_keys
 #ansible_user=root
+#ansible
 
