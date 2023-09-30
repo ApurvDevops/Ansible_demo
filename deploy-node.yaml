@@ -1,10 +1,10 @@
 ---
 - name: Install node and npm
-  hosts: 13.53.126.22
-  become: true 
+  become: true
+  hosts: 16.170.217.14
   tasks:
     - name: update apt repo and cache
-      apt:  update_cache=true force_apt_get=yes cache_valid_time=3600
+      apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
     - name: Install nodejs and npm
       apt:
         pkg:
@@ -12,7 +12,7 @@
         - npm
 - name: Deploy nodejs app
   become: true
-  hosts: 13.53.126.22
+  hosts: 16.170.217.14
   tasks: 
     - name: Copy nodejs folder to server
       copy:
@@ -23,3 +23,16 @@
          src: /root/app-1.0.0.tgz
          dest: /root/
          remote_src: yes
+    - name: Install dependencies
+      npm:
+        path: /root/package
+    - name: Start the application
+      command: 
+         chdir: /root/package/app
+         cmd: node server
+      async: 1000
+      poll: 0
+    - name: Ensure app is running
+      shell: ps aux | grep node
+      register: app_status
+    - debug: msg={{app_status.stdout_lines}}        
